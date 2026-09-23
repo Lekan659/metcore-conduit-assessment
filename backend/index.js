@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const { sequelize } = require("./models");
 const errorHandler = require("./middleware/errorHandler");
+const collectionsRoutes = require("./routes/collections");
 
 const usersRoutes = require("./routes/users");
 const userRoutes = require("./routes/user");
@@ -33,6 +34,7 @@ if (process.env.NODE_ENV === "production") {
 app.use("/api/users", usersRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/articles", articlesRoutes);
+app.use("/api/collections", collectionsRoutes);
 app.use("/api/profiles", profilesRoutes);
 app.use("/api/tags", tagsRoutes);
 app.get("/*any", (req, res) =>
