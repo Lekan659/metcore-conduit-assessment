@@ -18,6 +18,8 @@ import ProfileArticles from "./routes/Profile/ProfileArticles";
 import ProfileFavArticles from "./routes/Profile/ProfileFavArticles";
 import Settings from "./routes/Settings";
 import SignUp from "./routes/SignUp";
+import Collections from "./routes/Collections";
+import Collection from "./routes/Collection";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -33,6 +35,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="register" element={<SignUp />} />
 
             <Route path="settings" element={<Settings />} />
+            <Route path="collections" element={<Collections />} />
+            <Route path="collections/:id" element={<Collection />} />
 
             <Route path="editor" element={<ArticleEditor />}>
               <Route path=":slug" element={<ArticleEditor />} />
