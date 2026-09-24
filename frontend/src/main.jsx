@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import axios from "axios";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import AuthProvider from "./context/AuthContext";
@@ -20,6 +21,8 @@ import Settings from "./routes/Settings";
 import SignUp from "./routes/SignUp";
 import Collections from "./routes/Collections";
 import Collection from "./routes/Collection";
+
+axios.defaults.timeout = 10000;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

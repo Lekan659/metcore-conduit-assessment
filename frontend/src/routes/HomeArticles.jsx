@@ -6,7 +6,7 @@ import useArticleList from "../hooks/useArticles";
 function HomeArticles() {
   const { tabName, tagName } = useFeedContext();
 
-  const { articles, articlesCount, loading, setArticlesData } = useArticleList({
+  const { articles, articlesCount, loading, error, setArticlesData } = useArticleList({
     location: tabName,
     tabName,
     tagName,
@@ -16,6 +16,8 @@ function HomeArticles() {
     <div className="article-preview">
       <em>Loading articles list...</em>
     </div>
+  ) : error ? (
+    <div className="article-preview error-messages">{error}</div>
   ) : articles.length > 0 ? (
     <>
       <ArticlesPreview

@@ -31,13 +31,13 @@ To install the project on your computer, follow these steps:
 1. Clone the repository to your local machine.
 
    ```bash
-   git clone https://github.com/TonyMckes/conduit-realworld-example-app.git
+   git clone --branch feature/collections https://github.com/Lekan659/metcore-conduit-assessment.git
    ```
 
 2. Navigate to the project directory.
 
    ```bash
-   cd conduit-realworld-example-app
+   cd metcore-conduit-assessment
    ```
 
 3. Install project dependencies by running the command:
@@ -112,6 +112,8 @@ To run the project, follow these steps:
    - Home page should be available at [`http://localhost:3000/`](http://localhost:3000).
    - API endpoints should be available at [`http://localhost:3001/api`](http://localhost:3001/api).
 
+If port 3000 is occupied, Vite now stops with an error instead of moving onto the API's port 3001. Stop the old server with `Ctrl+C` and restart `npm run dev`; `Ctrl+Z` pauses it while leaving its port occupied. Seeded articles appear under **Global Feed**. When signed in, **Your Feed** shows articles from followed authors, so it may be empty. The example seed accounts use `example1@mail.com` through `example5@mail.com` with matching passwords `examplePwd1` through `examplePwd5`.
+
 #### Running Tests
 
 Run the unit and API tests after creating and migrating the separate test database:
@@ -131,9 +133,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Playwright starts the backend with `NODE_ENV=test` and the Vite frontend on isolated ports 3101 and 3100. Your usual development servers on 3001 and 3000 can keep running. The browser test signs up with a unique test account, logs out and back in, creates its own article, and exercises the Collections UI. Run it only against your dedicated test database; test accounts and articles remain there for inspection. On Linux, Chromium may require `npx playwright install --with-deps chromium`.
+Playwright starts the backend with `NODE_ENV=test` and the Vite frontend on isolated ports 3101 and 3100. Your usual development servers on 3001 and 3000 can keep running. The browser test signs up with a unique test account, logs out and back in, creates its own article, then saves it from an article preview and exercises the Collections UI. Run it only against your dedicated test database; test accounts and articles remain there for inspection. On Linux, Chromium may require `npx playwright install --with-deps chromium`.
 
-GitHub Actions runs `npm ci`, applies migrations to a fresh PostgreSQL service, runs unit/API tests and the frontend build, then runs the Chromium E2E test. Browser failure screenshots and traces are uploaded as workflow artifacts.
+GitHub Actions runs `npm ci`, checks backend and browser-test JavaScript syntax, applies migrations to a fresh PostgreSQL service, runs unit/API tests and the frontend build, then runs the Chromium E2E test. The backend is plain Node.js and has no compile step; the browser test starts it from the clean checkout. Browser failure screenshots and traces are uploaded as workflow artifacts.
 
 #### Production
 
@@ -142,6 +144,16 @@ The following command will build the production version of the app:
 ```bash
 npm run start
 ```
+
+## Known limitations
+
+- Collections do not update live across browser tabs. Refresh the page to see a change made in another tab.
+- The starter still calls `sequelize.sync({ alter: true })` when the backend starts. Migrations are supplied and tested, but production deployment should remove startup schema alteration and run migrations as a separate step.
+- Vite previously moved from port 3000 to 3001 when 3000 was occupied, colliding with the API. It now fails clearly instead. A paused old backend can still hold port 3001 and serve outdated routes; stop servers with `Ctrl+C` and restart them after backend changes.
+
+## AI Usage
+
+I used ChatGPT and Codex to discuss the inherited architecture, help implement and review Collections code and tests, and refine the documentation. I checked the result against the existing codebase and ran the automated and browser tests. One suggestion I rejected was adding follower and favourite counts to saved-article summaries. The collection view uses only the article and author fields it needs, avoiding extra queries and response data.
 
 ## License
 

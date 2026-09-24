@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const { randomUUID } = require("node:crypto");
 
-test("a user creates, edits, saves to, removes from and deletes a private collection", async ({ page }) => {
+test("a user creates, edits, saves from an article preview, removes from and deletes a private collection", async ({ page }) => {
   const suffix = randomUUID().slice(0, 8);
   const username = `browser-${suffix}`;
   const collectionName = `Read later ${suffix}`;
@@ -47,11 +47,13 @@ test("a user creates, edits, saves to, removes from and deletes a private collec
   await page.getByRole("button", { name: "Publish Article" }).click();
   await expect(page.getByRole("heading", { name: articleTitle })).toBeVisible();
 
-  await page.getByRole("button", { name: "Save to collection" }).click();
-  await page.getByLabel("Choose a collection").selectOption({ label: editedName });
-  await page.getByRole("button", { name: "Save article" }).click();
-  await expect(page.getByRole("status").filter({ hasText: `Saved to “${editedName}”.` })).toBeVisible();
-  await page.getByRole("link", { name: "View collection" }).click();
+  await page.goto(`/#/profile/${username}`);
+  const preview = page.getByRole("link", { name: articleTitle }).locator("..");
+  await preview.getByRole("button", { name: "Save to collection" }).click();
+  await preview.getByLabel("Choose a collection").selectOption({ label: editedName });
+  await preview.getByRole("button", { name: "Save article" }).click();
+  await expect(preview.getByRole("status").filter({ hasText: `Saved to “${editedName}”.` })).toBeVisible();
+  await preview.getByRole("link", { name: "View collection" }).click();
   await expect(page.getByRole("heading", { name: "Saved articles (1)" })).toBeVisible();
   await expect(page.getByRole("link", { name: articleTitle })).toBeVisible();
   await expect(page.getByRole("link", { name: username }).last()).toBeVisible();

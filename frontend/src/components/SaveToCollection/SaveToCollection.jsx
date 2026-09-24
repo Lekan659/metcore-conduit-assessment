@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { addArticleToCollection, getCollections } from "../../services/collections";
 import CollectionPagination from "../CollectionPagination/CollectionPagination";
 
-function CollectionPicker({ slug, headers }) {
+function CollectionPicker({ slug, headers, compact }) {
   const panelId = useId();
   const selectId = useId();
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ function CollectionPicker({ slug, headers }) {
 
   return (
     <div className="save-to-collection">
-      <button className="btn btn-outline-primary" type="button" aria-expanded={open}
+      <button className={`btn btn-outline-primary${compact ? " btn-sm" : ""}`} type="button" aria-expanded={open}
         aria-controls={panelId} disabled={saving} onClick={() => {
           setOpen(!open);
           setPage(0);
@@ -72,7 +72,7 @@ function CollectionPicker({ slug, headers }) {
           setSaveError("");
           setLoading(true);
         }}>
-        {open ? "Close collection picker" : "Save to collection"}
+        {compact && <i className="ion-bookmark" aria-hidden="true" />} {open ? "Close collection picker" : "Save to collection"}
       </button>
       {open && (
         <section id={panelId} aria-label="Save article to collection" aria-busy={loading}>
@@ -118,9 +118,15 @@ function CollectionPicker({ slug, headers }) {
   );
 }
 
-export default function SaveToCollection({ slug }) {
+export default function SaveToCollection({ slug, compact = false }) {
   const { isAuth, headers, loggedUser } = useAuth();
-  if (!isAuth) return <p><Link to="/login">Sign in to save articles to a collection</Link></p>;
+  if (!isAuth) return compact ? (
+    <div className="save-to-collection">
+      <Link className="btn btn-sm btn-outline-primary" to="/login">
+        <i className="ion-bookmark" aria-hidden="true" /> Save to collection
+      </Link>
+    </div>
+  ) : <p><Link to="/login">Sign in to save articles to a collection</Link></p>;
   // Changing articles or accounts discards selections and pending list responses.
-  return <CollectionPicker key={`${loggedUser.username}:${slug}`} slug={slug} headers={headers} />;
+  return <CollectionPicker key={`${loggedUser.username}:${slug}`} slug={slug} headers={headers} compact={compact} />;
 }

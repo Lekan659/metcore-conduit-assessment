@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ArticleMeta from "../ArticleMeta";
 import ArticleTags from "../ArticleTags";
 import FavButton from "../FavButton";
+import SaveToCollection from "../SaveToCollection";
 
 function ArticlesPreview({ articles, loading, updateArticles }) {
   const handleFav = (article) => {
@@ -27,6 +28,7 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
               slug={article.slug}
             />
           </ArticleMeta>
+          <SaveToCollection slug={article.slug} compact />
           <Link
             to={`/article/${article.slug}`}
             state={article}
