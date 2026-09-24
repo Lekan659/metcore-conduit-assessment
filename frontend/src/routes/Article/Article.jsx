@@ -7,6 +7,7 @@ import ArticleTags from "../../components/ArticleTags";
 import BannerContainer from "../../components/BannerContainer";
 import { useAuth } from "../../context/AuthContext";
 import getArticle from "../../services/getArticle";
+import SaveToCollection from "../../components/SaveToCollection";
 
 function Article() {
   const { state } = useLocation();
@@ -41,6 +42,7 @@ function Article() {
           <div className="col-md-12">
             {body && <Markdown options={{ forceBlock: true }}>{body}</Markdown>}
             <ArticleTags tagList={tagList} />
+            {article?.slug === slug && <SaveToCollection slug={slug} />}
           </div>
         </div>
 
