@@ -20,7 +20,7 @@ Before you run the project, make sure that you have the following tools and soft
 
 - Text editor/IDE (e.g., VS Code, Sublime Text, Atom)
 - [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/download/) `v18.11.0+`
+- [Node.js](https://nodejs.org/en/download/) `v22.12.0+`
 - [NPM](https://www.npmjs.com/) (usually included with Node.js)
 - SQL database
 
@@ -48,8 +48,8 @@ To install the project on your computer, follow these steps:
 
 ### Configuration
 
-1. Create a `.env` file in the root directory of the project
-2. Add the required environment variables as specified in the [`.env.example`](backend/.env.example) file
+1. Copy [`backend/.env.example`](backend/.env.example) to `backend/.env`.
+2. Set your PostgreSQL credentials and choose **different database names** for development and tests. The backend and migration CLI read `backend/.env`.
 3. (Optional) update the Sequelize configuration parameters in the [`config.js`](backend/config/config.js) file
 4. If you are **not** using PostgreSQL, you may also have to install the driver for your database:
 
@@ -84,7 +84,13 @@ To install the project on your computer, follow these steps:
    > :information_source: The command `npm run sqlz` is an alias for `npx -w backend sequelize-cli`.  
    > Execute `npm run sqlz -- --help` to see more of `sequelize-cli` commands availables.
 
-6. Optionally you can run the following command to populate your database with some dummy data:
+6. Apply migrations before seeding or starting the app:
+
+   ```bash
+   npm run sqlz -- db:migrate
+   ```
+
+7. Optionally you can run the following command to populate your database with some dummy data:
 
    ```bash
    npm run sqlz -- db:seed:all
@@ -108,11 +114,26 @@ To run the project, follow these steps:
 
 #### Running Tests
 
-To run tests, simply run the following command:
+Run the unit and API tests after creating and migrating the separate test database:
 
 ```bash
-npm run test
+npm run sqlz -- db:create --env test
+npm run sqlz -- db:migrate --env test
+npm test -- --run
 ```
+
+`db:create` is needed once per new local database. The test suite guards against using the development database as the test database.
+
+For the browser E2E flow, install Chromium once and run:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright starts the backend with `NODE_ENV=test` and the Vite frontend on isolated ports 3101 and 3100. Your usual development servers on 3001 and 3000 can keep running. The browser test signs up with a unique test account, logs out and back in, creates its own article, and exercises the Collections UI. Run it only against your dedicated test database; test accounts and articles remain there for inspection. On Linux, Chromium may require `npx playwright install --with-deps chromium`.
+
+GitHub Actions runs `npm ci`, applies migrations to a fresh PostgreSQL service, runs unit/API tests and the frontend build, then runs the Chromium E2E test. Browser failure screenshots and traces are uploaded as workflow artifacts.
 
 #### Production
 
